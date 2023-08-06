@@ -40,7 +40,6 @@ public class CartController {
 
 	@PostMapping("/addCartItem")
 	public ResponseEntity<?> addCartItem(@RequestBody CartImport cartImport) {
-
 		Products addedProduct = productRepo.findById(cartImport.getProductId()).get();
 		Users user = userRepo.findById(cartImport.getUserId()).get();
 
@@ -67,5 +66,13 @@ public class CartController {
 		return ResponseEntity.ok("deleted item");
 		
 	} 
+	@DeleteMapping("deleteAllCart/{userId}")
+	public ResponseEntity<String> deleteAllItemCart(@PathVariable int userId){
+		
+		cartRepo.deleteByUserId(userId);
+		return ResponseEntity.ok("Delete All cart");
+	}
+	
+	
 
 }

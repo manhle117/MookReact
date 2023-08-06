@@ -21,7 +21,13 @@ export default function Header(props) {
 
   return (
     <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-      <Cart cart={props.cart} deleteItem={props.deleteItem} />
+      <Cart
+        cart={props.cart}
+        deleteItem={props.deleteItem}
+        getItemToCart={props.getItemToCart}
+        getCarts={props.getCarts}
+        getMyOrder={props.getMyOrder}
+      />
       <h2 className="d-flex float-start mr-3">
         <NavLink to="/" style={{ textDecoration: "none", Color: "violet" }}>
           BakeryShop
@@ -93,7 +99,7 @@ export default function Header(props) {
             className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
             aria-labelledby="userDropdown"
           >
-            <NavLink
+            <Link
               to="/adminator"
               className="dropdown-item "
               onClick={() => {
@@ -104,9 +110,11 @@ export default function Header(props) {
                 }
               }}
             >
-              <i className="fa fa-user fa-sm fa-fw mr-2 text-gray-400" />
-              List Product
-            </NavLink>
+              Manager Page
+            </Link>
+            <Link to="/MyOrder" className="dropdown-item ">
+              My Order
+            </Link>
 
             <div className="dropdown-divider" />
             {isLogin ? (
@@ -116,7 +124,10 @@ export default function Header(props) {
                 href=""
                 data-toggle="modal"
                 data-target="#logoutModal"
-                onClick={() => handleLogout()}
+                onClick={() => {
+                  handleLogout();
+                  navigate("/");
+                }}
               >
                 <i className="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400" />
                 Logout

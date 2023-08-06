@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export default function SideBar(props) {
   return (
@@ -8,7 +8,7 @@ export default function SideBar(props) {
         className="d-flex flex-column vh-100 flex-shrink-0 p-3 text-white bg-dark"
         style={{ width: 250 }}
       >
-        <NavLink
+        <Link
           to="/"
           onClick={() => {
             props.handleIsUser();
@@ -17,11 +17,11 @@ export default function SideBar(props) {
         >
           <svg className="bi me-2" width={40} height={32}></svg>
           <span className="fs-4">BakeryShop</span>
-        </NavLink>
+        </Link>
         <hr />
         <ul className="nav nav-pills flex-column mb-auto">
           <li className="nav-item">
-            <NavLink
+            <Link
               to="#"
               className="nav-link text-white "
               onClick={() => {
@@ -31,10 +31,10 @@ export default function SideBar(props) {
             >
               <i className="fa fa-home" />
               <span className="ms-2">List Product</span>
-            </NavLink>
+            </Link>
           </li>
           <li>
-            <NavLink
+            <Link
               to="#"
               onClick={() => {
                 props.handleSetContent();
@@ -43,7 +43,7 @@ export default function SideBar(props) {
             >
               <i className="fa fa-dashboard" />
               <span className="ms-2">List User</span>
-            </NavLink>
+            </Link>
           </li>
           <li>
             <a href="#" className="nav-link text-white">
@@ -65,52 +65,6 @@ export default function SideBar(props) {
           </li>
         </ul>
         <hr />
-        <div className="dropdown">
-          <a
-            href="#"
-            className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-            id="dropdownUser1"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <img
-              src="https://github.com/mdo.png"
-              alt
-              width={32}
-              height={32}
-              className="rounded-circle me-2"
-            />
-            <strong> John W </strong>
-          </a>
-          <ul
-            className="dropdown-menu dropdown-menu-dark text-small shadow"
-            aria-labelledby="dropdownUser1"
-          >
-            <li>
-              <a className="dropdown-item" href="#">
-                New project
-              </a>
-            </li>
-            <li>
-              <a className="dropdown-item" href="#">
-                Settings
-              </a>
-            </li>
-            <li>
-              <a className="dropdown-item" href="#">
-                Profile
-              </a>
-            </li>
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
-            <li>
-              <a className="dropdown-item" href="#">
-                Sign out
-              </a>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   );

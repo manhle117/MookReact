@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import "./StyleProductDetail.css";
 export default function ProductDetail(props) {
   const [productDetail, setProductDetail] = useState({});
+  const [quantity, setQuantity] = useState(1);
   const { id } = useParams();
   useEffect(() => {
     getProductDetail(id);
@@ -48,7 +49,7 @@ export default function ProductDetail(props) {
                   <button
                     className="shadow btn custom-btn"
                     onClick={() => {
-                      props.getItemToCart(productDetail);
+                      props.getItemToCart(productDetail, quantity);
                     }}
                   >
                     Add to cart
@@ -59,9 +60,11 @@ export default function ProductDetail(props) {
                     type="number"
                     className="form-control"
                     id="cart_quantity"
-                    defaultValue={1}
-                    min={0}
-                    max={5}
+                    value={quantity}
+                    onChange={(e) => {
+                      setQuantity(e.target.value);
+                    }}
+                    min={1}
                     placeholder="Enter email"
                     name="cart_quantity"
                   />

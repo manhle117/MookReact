@@ -1,8 +1,43 @@
-import React, { useContext } from "react";
+import axios from "axios";
+import React from "react";
 import Swal from "sweetalert2";
 export default function Cart(props) {
   const cart = props.cart;
   const deleteItem = props.deleteItem;
+  const handleQuantity = props.getItemToCart;
+  const hasItem = cart.length > 0;
+
+  const totalPayment = cart.reduce((totalPayment, item) => {
+    return totalPayment + item.quantity * item.product.price;
+  }, 0);
+  const handleClearCart = async () => {
+    const userId = localStorage.getItem("userId");
+    await axios
+      .delete(`http://localhost:8080/api/carts/deleteAllCart/${userId}`)
+      .then((response) => {
+        props.getCarts();
+      });
+  };
+  const handlePayment = () => {
+    const user = localStorage.getItem("userId");
+    axios
+      .post("http://localhost:8080/api/orders/addOrder", {
+        userId: user,
+        totalAmount: totalPayment,
+      })
+      .then((response) => {
+        handleClearCart();
+        props.getMyOrder()
+        Swal.fire({
+          title: "Thanh toán thành công",
+          icon: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <div>
       <div
@@ -34,68 +69,90 @@ export default function Cart(props) {
             </div>
             <div class="modal-body">
               <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Tên bánh</th>
-                    <th>Hình ảnh</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                    <th>Tổng tiền</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cart.map((item) => {
-                    return (
-                      <tr key={item.cartId}>
-                        <td>{item.product.productName}</td>
-                        <td>
-                          <img
-                            src={`http://localhost:8080/api/products/get-image/${item.product.image}`}
-                            width={60}
-                            alt="zxc"
-                          />
-                        </td>
-                        <td>
-                          <button className="btn btn-info">-</button>
-                          <span
-                            style={{
-                              paddingLeft: `5px`,
-                              paddingRight: `5px`,
-                            }}
-                          >
-                            {item.quantity}
-                          </span>
-                          <button className="btn btn-info ">+</button>
-                        </td>
-                        <td>{item.product.price}</td>
-                        <td>
-                          {(
-                            item.quantity * item.product.price
-                          ).toLocaleString()}
-                          đ
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-danger"
-                            onClick={() => {
-                              deleteItem(item.cartId);
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </td>
+                {hasItem ? (
+                  <>
+                    <thead>
+                      <tr>
+                        <th>Tên bánh</th>
+                        <th>Hình ảnh</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Tổng tiền</th>
+                        <th></th>
                       </tr>
-                    );
-                  })}
-                </tbody>
+                    </thead>
+                    <tbody>
+                      {cart.map((item) => {
+                        return (
+                          <tr key={item.cartId}>
+                            <td>{item.product.productName}</td>
+                            <td>
+                              <img
+                                src={`http://localhost:8080/api/products/get-image/${item.product.image}`}
+                                width={60}
+                                alt="zxc"
+                              />
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-info"
+                                onClick={() => {
+                                  handleQuantity(item.product, -1);
+                                }}
+                              >
+                                -
+                              </button>
+                              <span
+                                style={{
+                                  paddingLeft: `5px`,
+                                  paddingRight: `5px`,
+                                }}
+                              >
+                                {item.quantity}
+                              </span>
+                              <button
+                                className="btn btn-info"
+                                onClick={() => {
+                                  handleQuantity(item.product, 1);
+                                }}
+                              >
+                                +
+                              </button>
+                            </td>
+                            <td>{item.product.price}</td>
+                            <td>
+                              {(
+                                item.quantity * item.product.price
+                              ).toLocaleString()}
+                              đ
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-danger"
+                                onClick={() => {
+                                  deleteItem(item.cartId);
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </>
+                ) : (
+                  <h2 className="text-danger ">Has no Item in your cart</h2>
+                )}
               </table>
             </div>
 
             <div class="modal-footer">
-              <h3 className="mr-auto text-danger">
-                {/* totalPayment: {cartCtx.totalAmount.toLocaleString()} đ */}
-              </h3>
+              {hasItem && (
+                <h3 className="mr-auto text-danger">
+                  totalPayment: {totalPayment.toLocaleString()}
+                </h3>
+              )}
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -103,11 +160,17 @@ export default function Cart(props) {
               >
                 Close
               </button>
-              {/* {hasItem && (
-                <button type="button" class="btn btn-primary">
+              {hasItem && (
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onClick={() => {
+                    handlePayment(cart);
+                  }}
+                >
                   Purchase
                 </button>
-              )} */}
+              )}
             </div>
           </div>
         </div>

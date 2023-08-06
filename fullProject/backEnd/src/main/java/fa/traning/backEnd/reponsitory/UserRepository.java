@@ -11,5 +11,6 @@ import fa.traning.backEnd.model.Users;
 public interface UserRepository extends JpaRepository<Users, Integer> {
  Users findByUsername(String username);
 
-Optional<Products> findByUserId(int userId);
+Optional<Users> findByUserId(int userId);
+
 }

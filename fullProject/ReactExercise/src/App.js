@@ -12,15 +12,18 @@ import Register from "./common/Register";
 import Swal from "sweetalert2";
 import HomeAdmin from "./admin/HomeAdmin";
 import ListUserAdmin from "./admin/ListUserAdmin";
+import MyOrder from "./MainView/MyOrder";
 function App(props) {
   const [isLogin, setIsLogin] = useState(false);
   const [cart, setCart] = useState([]);
   const [isUser, setIsUser] = useState(true);
+  const [listOrders, setListOrders] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     console.log("render");
     handleIsLogin();
     getCarts();
+    getMyOrder();
   }, []);
   const handleIsUser = () => {
     setIsUser(!isUser);
@@ -53,7 +56,6 @@ function App(props) {
   };
   const getCarts = () => {
     const userId = localStorage.getItem("userId");
-
     axios
       .get(`http://localhost:8080/api/carts/${userId}`)
       .then((response) => {
@@ -63,18 +65,18 @@ function App(props) {
         console.log(error);
       });
   };
-  const getItemToCart = (product) => {
+  const getItemToCart = (product, quantity) => {
     const user = localStorage.getItem("userId");
     if (user) {
       axios
         .post("http://localhost:8080/api/carts/addCartItem", {
           ...product,
           userId: user,
-          quantity: 1,
+          quantity: quantity,
         })
         .then((response) => {
           Swal.fire({
-            title: "Thêm vào giỏ hàng",
+            title: "thành công",
             icon: "success",
           });
           getCarts();
@@ -86,6 +88,13 @@ function App(props) {
       navigate("/login");
     }
   };
+  const getMyOrder = () => {
+    const id = localStorage.getItem("userId");
+    axios.get(`http://localhost:8080/api/orders/${id}`).then((response) => {
+      console.log(response.data);
+      setListOrders(response.data);
+    });
+  };
   return (
     <>
       {isUser && (
@@ -95,6 +104,9 @@ function App(props) {
           cart={cart}
           deleteItem={handleDeleteItemFromCart}
           handleIsUser={handleIsUser}
+          getItemToCart={getItemToCart}
+          getCarts={getCarts}
+          getMyOrder={getMyOrder}
         />
       )}
       <Routes>
@@ -117,6 +129,7 @@ function App(props) {
           path="/adminator"
           element={<HomeAdmin handleIsUser={handleIsUser} />}
         />
+        <Route path="/MyOrder" element={<MyOrder listOrders={listOrders} />} />
 
         <Route
           path="/productDetail/:id"

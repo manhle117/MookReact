@@ -3,6 +3,7 @@ import "./itemStyle.css";
 import { Link, NavLink, useParams } from "react-router-dom";
 export default function CardItem(props) {
   const product = props.item;
+  const quantity = 1;
   const { id } = useParams();
   return (
     <div className="card m-2" key={product.productId}>
@@ -24,7 +25,7 @@ export default function CardItem(props) {
         <button
           className="btn btn-outline-primary"
           onClick={() => {
-            props.getItemToCart(product);
+            props.getItemToCart(product, quantity);
           }}
         >
           Add to Cart

@@ -21,5 +21,7 @@ public class OrderDetails {
 	@ManyToOne
 	@JoinColumn(name ="orderId")
 	private Orders order;
+	@Column
+	private int quantity;
 	
 }

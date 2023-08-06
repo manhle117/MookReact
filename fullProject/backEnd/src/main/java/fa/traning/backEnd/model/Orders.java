@@ -1,6 +1,7 @@
-package fa.traning.backEnd.model;
+ package fa.traning.backEnd.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
