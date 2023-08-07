@@ -3,6 +3,7 @@ package fa.traning.backEnd.model;
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table
+@Builder
 public class OrderDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +25,6 @@ public class OrderDetails {
 	private Orders order;
 	@Column
 	private int quantity;
+
 	
 }

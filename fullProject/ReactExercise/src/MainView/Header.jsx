@@ -99,19 +99,22 @@ export default function Header(props) {
             className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
             aria-labelledby="userDropdown"
           >
-            <Link
-              to="/adminator"
-              className="dropdown-item "
-              onClick={() => {
-                if (user !== null) {
-                  props.handleIsUser();
-                } else {
-                  navigate("/login");
-                }
-              }}
-            >
-              Manager Page
-            </Link>
+            {props.account.role === "admin" && (
+              <Link
+                to="/adminator"
+                className="dropdown-item "
+                onClick={() => {
+                  if (user !== null) {
+                    props.handleIsUser();
+                  } else {
+                    navigate("/login");
+                  }
+                }}
+              >
+                Manager Page
+              </Link>
+            )}
+
             <Link to="/MyOrder" className="dropdown-item ">
               My Order
             </Link>

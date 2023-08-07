@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import "./LoginStyle.css";
 import { NavLink, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 export default function Login(props) {
   const [user, setUser] = useState({
     username: "",
@@ -24,10 +25,14 @@ export default function Login(props) {
         localStorage.setItem("userId", response.data);
         props.setIsLogin(true);
         props.getCarts();
+        props.getUser();
         navigate("/");
       })
       .catch((error) => {
-        window.alert("fail");
+        Swal.fire({
+          title: "Đăng nhập thất bại",
+          icon: "error",
+        });
         console.log(error);
       });
   };
@@ -51,6 +56,7 @@ export default function Login(props) {
                     placeholder="Username"
                     value={user.username}
                     onChange={handleChange}
+                    required
                   />
                   <i className="fa fa-user" />
                 </div>
@@ -62,17 +68,14 @@ export default function Login(props) {
                     value={user.password}
                     placeholder="Password"
                     onChange={handleChange}
+                    required
                   />
                   <i className="fa fa-lock" /> <i className="fa fa-eye-slash" />
                 </div>
                 <div className="login_btn">
                   <button className="login_button">LOGIN</button>
                 </div>
-                <div className="forgot">
-                  <p>
-                    Forgot <a href="#">Username</a> <a href="#">Password</a> ?
-                  </p>
-                </div>
+
                 <div className="create margin">
                   <NavLink to="/register" className="create_acc">
                     Create your Account

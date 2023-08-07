@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./common/Login";
 import HomeUser from "./MainView/HomeUser";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import ListCake from "./MainView/ListCake";
 import ProductDetail from "./MainView/ProductDetail";
 import Header from "./MainView/Header";
@@ -13,17 +13,25 @@ import Swal from "sweetalert2";
 import HomeAdmin from "./admin/HomeAdmin";
 import ListUserAdmin from "./admin/ListUserAdmin";
 import MyOrder from "./MainView/MyOrder";
+import OrderDetail from "./MainView/OrderDetail";
 function App(props) {
   const [isLogin, setIsLogin] = useState(false);
   const [cart, setCart] = useState([]);
   const [isUser, setIsUser] = useState(true);
   const [listOrders, setListOrders] = useState([]);
+  const [orderDetail, setOrderDetail] = useState([]);
+  const [account, setAccount] = useState({
+    username: "",
+    password: "",
+    fullName: "",
+    role: "",
+  });
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("render");
     handleIsLogin();
     getCarts();
     getMyOrder();
+    getMyOrderDetail();
   }, []);
   const handleIsUser = () => {
     setIsUser(!isUser);
@@ -65,6 +73,13 @@ function App(props) {
         console.log(error);
       });
   };
+  const getUser = () => {
+    const id = localStorage.getItem("userId");
+    axios.get(`http://localhost:8080/api/users/getUser/${id}`).then((res) => {
+      console.log(res.data);
+      setAccount(res.data);
+    });
+  };
   const getItemToCart = (product, quantity) => {
     const user = localStorage.getItem("userId");
     if (user) {
@@ -95,6 +110,17 @@ function App(props) {
       setListOrders(response.data);
     });
   };
+  const getMyOrderDetail = (id) => {
+    axios
+      .get(`http://localhost:8080/api/orderDetails/${id}`)
+      .then((res) => {
+        console.log(res.data);
+        setOrderDetail(res.data);
+      })
+      .catch((er) => {
+        console.log(er);
+      });
+  };
   return (
     <>
       {isUser && (
@@ -107,12 +133,19 @@ function App(props) {
           getItemToCart={getItemToCart}
           getCarts={getCarts}
           getMyOrder={getMyOrder}
+          account={account}
         />
       )}
       <Routes>
         <Route
           path="/login"
-          element={<Login setIsLogin={setIsLogin} getCarts={getCarts} />}
+          element={
+            <Login
+              setIsLogin={setIsLogin}
+              getCarts={getCarts}
+              getUser={getUser}
+            />
+          }
         />
         <Route
           path="/"
@@ -127,10 +160,28 @@ function App(props) {
         />
         <Route
           path="/adminator"
-          element={<HomeAdmin handleIsUser={handleIsUser} />}
+          element={
+            account.role === "admin" ? (
+              <HomeAdmin handleIsUser={handleIsUser} />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
-        <Route path="/MyOrder" element={<MyOrder listOrders={listOrders} />} />
 
+        <Route
+          path="/MyOrder"
+          element={
+            <MyOrder
+              getMyOrderDetail={getMyOrderDetail}
+              listOrders={listOrders}
+            />
+          }
+        />
+        <Route
+          path="/orderDetail"
+          element={<OrderDetail orderDetail={orderDetail} />}
+        />
         <Route
           path="/productDetail/:id"
           element={<ProductDetail getItemToCart={getItemToCart} />}

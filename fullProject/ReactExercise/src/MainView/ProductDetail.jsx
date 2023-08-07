@@ -30,7 +30,7 @@ export default function ProductDetail(props) {
                 className="img-fluid mt-2"
                 src={`http://localhost:8080/api/products/get-image/${productDetail.image}`}
                 alt="ProductS"
-                style={{ height: "422px" }}
+                style={{ height: "400px" }}
               />
             </div>
           </div>

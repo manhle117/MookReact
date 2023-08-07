@@ -20,14 +20,12 @@ export default function Cart(props) {
   };
   const handlePayment = () => {
     const user = localStorage.getItem("userId");
+    console.log(totalPayment);
     axios
-      .post("http://localhost:8080/api/orders/addOrder", {
-        userId: user,
-        totalAmount: totalPayment,
-      })
+      .post(`http://localhost:8080/api/orders/${user}/${totalPayment}`)
       .then((response) => {
         handleClearCart();
-        props.getMyOrder()
+        props.getMyOrder();
         Swal.fire({
           title: "Thanh toán thành công",
           icon: "success",
@@ -119,7 +117,7 @@ export default function Cart(props) {
                                 +
                               </button>
                             </td>
-                            <td>{item.product.price}</td>
+                            <td>{item.product.price.toLocaleString()}đ</td>
                             <td>
                               {(
                                 item.quantity * item.product.price
@@ -150,7 +148,7 @@ export default function Cart(props) {
             <div class="modal-footer">
               {hasItem && (
                 <h3 className="mr-auto text-danger">
-                  totalPayment: {totalPayment.toLocaleString()}
+                  totalPayment: {totalPayment.toLocaleString()}đ
                 </h3>
               )}
               <button
