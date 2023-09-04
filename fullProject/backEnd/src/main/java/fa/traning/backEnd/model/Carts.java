@@ -23,6 +23,9 @@ public class Carts {
 	@ManyToOne
 	private Users user;
 	
+	public double priceItemCart() {
+		return product.getPrice() * quantity;
+	}
 	
 
 }

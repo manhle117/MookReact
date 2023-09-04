@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactPaginate from "react-paginate";
-
+import "react-paginate/theme/basic/react-paginate.css";
 export default function ListUserAdmin(props) {
   const [currentPage, setCurrentPage] = useState(0);
   const usersPerPage = 5;
@@ -13,7 +13,7 @@ export default function ListUserAdmin(props) {
     (currentPage + 1) * usersPerPage
   );
   return (
-    <div className="col-9 my-auto">
+    <div className="col-9 my-auto" style={{ marginLeft: "280px" }}>
       <h2 className="d-flex justify-content-center text-bold">List User</h2>
       <table
         id="example"
@@ -52,18 +52,23 @@ export default function ListUserAdmin(props) {
           })}
         </tbody>
       </table>
-      <ReactPaginate
-        previousLabel={"Previous"}
-        nextLabel={"Next"}
-        breakLabel={"..."}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        onPageChange={handlePageChange}
-        containerClassName={"pagination"}
-        subContainerClassName={"pages pagination"}
-        activeClassName={"active"}
-      />
+      <div className="row">
+        <div className="col d-flex justify-content-end">
+          <ReactPaginate
+            className="react-paginate"
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageChange}
+            containerClassName={"pagination"}
+            subContainerClassName={"pages pagination"}
+            activeClassName={"active"}
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,17 +3,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./common/Login";
 import HomeUser from "./MainView/HomeUser";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import ListCake from "./MainView/ListCake";
 import ProductDetail from "./MainView/ProductDetail";
 import Header from "./MainView/Header";
-import Cart from "./MainView/Cart";
 import axios from "axios";
 import Register from "./common/Register";
 import Swal from "sweetalert2";
 import HomeAdmin from "./admin/HomeAdmin";
-import ListUserAdmin from "./admin/ListUserAdmin";
 import MyOrder from "./MainView/MyOrder";
 import OrderDetail from "./MainView/OrderDetail";
+import PaymentDetail from "./MainView/PaymentDetail";
+import Profile from "./MainView/Profile";
+
 function App(props) {
   const [isLogin, setIsLogin] = useState(false);
   const [cart, setCart] = useState([]);
@@ -25,46 +25,38 @@ function App(props) {
     password: "",
     fullName: "",
     role: "",
+    address: "",
+    phoneNumber: "",
   });
+
   const navigate = useNavigate();
   useEffect(() => {
     handleIsLogin();
     getCarts();
     getMyOrder();
-    getMyOrderDetail();
+    getUser();
   }, []);
+
   const handleIsUser = () => {
     setIsUser(!isUser);
   };
+
   const handleIsLogin = () => {
     const login = localStorage.getItem("userId");
     if (login) {
       setIsLogin(true);
     }
   };
-  const handleDeleteItemFromCart = (id) => {
-    Swal.fire({
-      title: "Bạn có muốn xóa không?",
-      text: "Bạn sẽ không thể hoàn tác!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:8080/api/carts/delete/${id}`)
-          .then((response) => {
-            getCarts();
-          });
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
-      }
-    });
+  const handleDeleteItemFromCart = async (id) => {
+    await axios
+      .delete(`http://localhost:8080/api/carts/delete/${id}`)
+      .then((response) => {
+        getCarts();
+      });
   };
-  const getCarts = () => {
+  const getCarts = async () => {
     const userId = localStorage.getItem("userId");
-    axios
+    await axios
       .get(`http://localhost:8080/api/carts/${userId}`)
       .then((response) => {
         setCart(response.data);
@@ -73,48 +65,70 @@ function App(props) {
         console.log(error);
       });
   };
-  const getUser = () => {
+  const getUser = async () => {
     const id = localStorage.getItem("userId");
-    axios.get(`http://localhost:8080/api/users/getUser/${id}`).then((res) => {
-      console.log(res.data);
-      setAccount(res.data);
-    });
+    await axios
+      .get(`http://localhost:8080/api/users/getUser/${id}`)
+      .then((res) => {
+        setAccount(res.data);
+      });
   };
-  const getItemToCart = (product, quantity) => {
+  const getItemToCart = async (product, quantity, isHandleChange) => {
     const user = localStorage.getItem("userId");
     if (user) {
-      axios
-        .post("http://localhost:8080/api/carts/addCartItem", {
-          ...product,
-          userId: user,
-          quantity: quantity,
-        })
-        .then((response) => {
-          Swal.fire({
-            title: "thành công",
-            icon: "success",
+      if (isHandleChange) {
+        await axios
+          .post("http://localhost:8080/api/carts/addCartItem", {
+            ...product,
+            userId: user,
+            quantity: quantity,
+          })
+          .then((response) => {
+            Swal.fire({
+              title: "thành công",
+              icon: "success",
+            });
+            getCarts();
+          })
+          .catch((error) => {
+            console.log(error);
           });
-          getCarts();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      } else {
+        await axios
+          .post("http://localhost:8080/api/carts/addCartItem", {
+            ...product,
+            userId: user,
+            quantity: quantity,
+          })
+          .then((response) => {
+            getCarts();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     } else {
       navigate("/login");
     }
   };
-  const getMyOrder = () => {
-    const id = localStorage.getItem("userId");
-    axios.get(`http://localhost:8080/api/orders/${id}`).then((response) => {
-      console.log(response.data);
-      setListOrders(response.data);
-    });
+  const closeModal = () => {
+    if (window.$) {
+      window.$("#exampleModal").modal("hide");
+    }
   };
-  const getMyOrderDetail = (id) => {
-    axios
+
+  const getMyOrder = async () => {
+    const id = localStorage.getItem("userId");
+    await axios
+      .get(`http://localhost:8080/api/orders/${id}`)
+      .then((response) => {
+        setListOrders(response.data);
+      });
+  };
+  const getMyOrderDetail = async (id) => {
+    const resp = await axios
       .get(`http://localhost:8080/api/orderDetails/${id}`)
       .then((res) => {
-        console.log(res.data);
         setOrderDetail(res.data);
       })
       .catch((er) => {
@@ -134,8 +148,11 @@ function App(props) {
           getCarts={getCarts}
           getMyOrder={getMyOrder}
           account={account}
+          handleDeleteItemFromCart={handleDeleteItemFromCart}
+          closeModal={closeModal}
         />
       )}
+
       <Routes>
         <Route
           path="/login"
@@ -144,6 +161,7 @@ function App(props) {
               setIsLogin={setIsLogin}
               getCarts={getCarts}
               getUser={getUser}
+              getMyOrder={getMyOrder}
             />
           }
         />
@@ -159,10 +177,10 @@ function App(props) {
           }
         />
         <Route
-          path="/adminator"
+          path="/adminator/*"
           element={
             account.role === "admin" ? (
-              <HomeAdmin handleIsUser={handleIsUser} />
+              <HomeAdmin getMyOrder={getMyOrder} handleIsUser={handleIsUser} />
             ) : (
               <Navigate to="/" />
             )
@@ -174,6 +192,7 @@ function App(props) {
           element={
             <MyOrder
               getMyOrderDetail={getMyOrderDetail}
+              getMyOrder={getMyOrder}
               listOrders={listOrders}
             />
           }
@@ -182,11 +201,35 @@ function App(props) {
           path="/orderDetail"
           element={<OrderDetail orderDetail={orderDetail} />}
         />
+
         <Route
           path="/productDetail/:id"
           element={<ProductDetail getItemToCart={getItemToCart} />}
         />
+
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/paymentDetail"
+          element={
+            <PaymentDetail
+              cart={cart}
+              account={account}
+              getMyOrder={getMyOrder}
+              getCarts={getCarts}
+              closeModal={closeModal}
+            />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              account={account}
+              setAccount={setAccount}
+              getUser={getUser}
+            />
+          }
+        />
       </Routes>
     </>
   );

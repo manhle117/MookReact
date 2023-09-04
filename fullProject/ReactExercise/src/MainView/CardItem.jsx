@@ -1,14 +1,14 @@
 import React from "react";
 import "./itemStyle.css";
-import { Link, NavLink, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 export default function CardItem(props) {
   const product = props.item;
   const quantity = 1;
-  const { id } = useParams();
+
   return (
     <div className="card m-2" key={product.productId}>
       <div className="d-flex sale pb-3">
-        <div className="priceLabel">{product.price.toLocaleString()}</div>
+        <div className="priceLabel">{product.price.toLocaleString()}đ</div>
       </div>
       <NavLink to={`/productDetail/${product.productId}`}>
         <img
@@ -25,10 +25,10 @@ export default function CardItem(props) {
         <button
           className="btn btn-outline-primary"
           onClick={() => {
-            props.getItemToCart(product, quantity);
+            props.getItemToCart(product, quantity, true);
           }}
         >
-          Add to Cart
+          Thêm vào giỏ
         </button>
       </div>
     </div>

@@ -1,0 +1,55 @@
+nav {
+    min-height: 70px;
+    background: linear-gradient(120deg, #0cf9e5, #5a84eb);
+}
+
+
+
+nav .navbar-brand .logo .h2 {
+    margin: 0;
+}
+
+nav .navbar-brand .h4 {
+    margin-bottom: 0px;
+    font-weight: 900;
+}
+
+nav .navbar-brand .fs-6 {
+    font-size: 0.88rem !important;
+}
+
+nav ul li {
+    padding: 0 20px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    padding-top: 5px;
+    color: #333;
+}
+
+
+.navbar-light .navbar-nav .nav-link.active {
+    color: #451296;
+}
+
+nav ul li a .cart {
+    padding: 4px 6px;
+    border-radius: 6px;
+    position: relative;
+    display: inline;
+
+}
+
+nav ul li a .cart::after {
+    position: absolute;
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ff5252;
+    top: -1px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}

@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fa.traning.backEnd.model.Users;
@@ -27,14 +28,15 @@ public class UserController {
 	public List<Users> showListUsers() {
 		return userRepo.findAll();
 	}
+
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getUserById(@PathVariable int id){
+	public ResponseEntity<?> getUserById(@PathVariable int id) {
 		Users user = userRepo.findById(id).get();
 		return ResponseEntity.ok(user);
 	}
 
 	@PostMapping("/addUser")
-	public ResponseEntity<?> addUser(@RequestBody Users user) { 
+	public ResponseEntity<?> addUser(@RequestBody Users user) {
 		Users userDB = userRepo.findByUsername(user.getUsername());
 		if (userDB == null) {
 			Users userSetter = new Users();
@@ -42,7 +44,7 @@ public class UserController {
 			userSetter.setPassword(user.getPassword());
 			userSetter.setFullName(user.getFullName());
 			userSetter.setRole("customer");
-			Users savedUser = userRepo.save(userSetter);
+			userRepo.save(userSetter);
 			return ResponseEntity.ok("addSuccess");
 		}
 
@@ -52,19 +54,34 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Users user) {
 		Users userDB = userRepo.findByUsername(user.getUsername());
-		
+
 		if (userDB == null || !userDB.getPassword().equals(user.getPassword())) {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.ok(userDB.getUserId());
 	}
+
 	@GetMapping("/getUser/{id}")
-	public ResponseEntity<?> getUser(@PathVariable int id){
+	public ResponseEntity<?> getUser(@PathVariable int id) {
 		Users user = userRepo.findByUserId(id).get();
-		
-		
+
 		return ResponseEntity.ok(user);
 	}
+
+	@PutMapping("update/{id}")
+	public ResponseEntity<String> updateProfile(@RequestParam("fullName") String fullName,
+			@RequestParam("email") String email, @RequestParam("address") String address,
+			@RequestParam("phoneNumber") String phoneNumber,@PathVariable int id) {
+		Users userUpdated = userRepo.findById(id).get();
+		userUpdated.setAddress(address);
+		userUpdated.setEmail(email);
+		userUpdated.setFullName(fullName);
+		userUpdated.setPhoneNumber(phoneNumber);
+		userRepo.save(userUpdated);
+				return ResponseEntity.ok("Successfully");
+
+	}
+
 	@DeleteMapping("/delete/{id}")
 	public void deleteUser(@PathVariable int id) {
 		userRepo.deleteById(id);

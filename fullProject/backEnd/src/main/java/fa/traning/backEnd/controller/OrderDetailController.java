@@ -26,7 +26,7 @@ public class OrderDetailController {
 	OrderRepository orderRepo;
 	@Autowired
 	OrderDetailRepository orderDetailRepo;
-	@GetMapping("/{id}")
+	@GetMapping("/{id}")	
 	public ResponseEntity<List<OrderDetails>> getOrderDetail(@PathVariable int id){
 		Orders order = orderRepo.findByOrderId(id);
 		List<OrderDetails> listOrderDetail = orderDetailRepo.findByOrder(order);

@@ -1,8 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Cart from "./Cart";
+import "./ViewPurchase.css";
+
 export default function Header(props) {
   const isLogin = props.isLogin;
   const setIsLogin = props.setIsLogin;
@@ -18,138 +20,186 @@ export default function Header(props) {
   };
 
   const loginAlready = localStorage.getItem("userId");
-
   return (
-    <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light mb-3">
       <Cart
         cart={props.cart}
         deleteItem={props.deleteItem}
         getItemToCart={props.getItemToCart}
         getCarts={props.getCarts}
         getMyOrder={props.getMyOrder}
+        handleDeleteItemFromCart={props.handleDeleteItemFromCart}
+        closeModal={props.closeModal}
       />
-      <h2 className="d-flex float-start mr-3">
-        <NavLink to="/" style={{ textDecoration: "none", Color: "violet" }}>
-          BakeryShop
-        </NavLink>
-      </h2>
-
-      <ul className="navbar-nav ml-auto">
-        {loginAlready && (
-          <button
-            type="button"
-            className="btn btn-success d-flex float-right mt-3"
-            data-toggle="modal"
-            data-target="#exampleModal"
-            style={{ height: "50%" }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              class="bi bi-cart"
-              viewBox="0 0 16 16"
-              style={{ marginRight: "4px", marginBottom: "-2px" }}
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mynav"
+        aria-controls="mynav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span className="navbar-toggler-icon" />
+      </button>
+      <a className="navbar-brand" href="#">
+        <div className="d-flex">
+          <div className="ms-3 d-flex flex-column">
+            <NavLink
+              to="/"
+              style={{
+                textDecoration: "none",
+                color: "black",
+                fontSize: "30px",
+                fontFamily: "Optima",
+                fontWeight: "500",
+              }}
             >
-              <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-            </svg>
-          </button>
-        )}
-
-        <li className="nav-item dropdown no-arrow d-sm-none">
-          <a
-            className="nav-link dropdown-toggle"
-            href="#"
-            id="searchDropdown"
-            role="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i className="fa fa-search fa-fw" />
-          </a>
-          <div
-            className="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-            aria-labelledby="searchDropdown"
-          ></div>
-        </li>
-        <div className="topbar-divider d-none d-sm-block" />
-        <li className="nav-item dropdown no-arrow">
-          <a
-            className="nav-link dropdown-toggle"
-            href="#"
-            id="userDropdown"
-            role="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <span className="mr-2 d-none d-lg-inline text-gray-600 small">
-              Valerie Luna
-            </span>
-            <img
-              className="img-profile rounded-circle"
-              src="https://images.contentstack.io/v3/assets/blt76b5e73bfd1451ea/bltb39c0e56787dd08c/64836bb8d5b9a543956dbecd/DevilTeemo_02.png?quality=90"
-              alt=""
-              height={50}
-            />
-          </a>
-          <div
-            className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-            aria-labelledby="userDropdown"
-          >
-            {props.account.role === "admin" && (
-              <Link
-                to="/adminator"
-                className="dropdown-item "
-                onClick={() => {
-                  if (user !== null) {
-                    props.handleIsUser();
-                  } else {
-                    navigate("/login");
-                  }
-                }}
-              >
-                Manager Page
-              </Link>
-            )}
-
-            <Link to="/MyOrder" className="dropdown-item ">
-              My Order
-            </Link>
-
-            <div className="dropdown-divider" />
-            {isLogin ? (
-              // eslint-disable-next-line jsx-a11y/anchor-is-valid
-              <a
-                className="dropdown-item"
-                href=""
-                data-toggle="modal"
-                data-target="#logoutModal"
-                onClick={() => {
-                  handleLogout();
-                  navigate("/");
-                }}
-              >
-                <i className="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400" />
-                Logout
-              </a>
-            ) : (
-              // eslint-disable-next-line jsx-a11y/anchor-is-valid
-              <Link
-                className="dropdown-item"
-                to="/login"
-                data-toggle="modal"
-                data-target="#logoutModal"
-              >
-                <i className="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400" />
-                Login
-              </Link>
-            )}
+              Tiệm bánh MH
+            </NavLink>
           </div>
-        </li>
-      </ul>
+        </div>
+      </a>
+      <div className="collapse navbar-collapse" id="mynav">
+        <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li className="nav-item">
+            <a className="nav-link" href="#">
+              <Link to="/" style={{ textDecoration: "none" }}>
+                Trang chủ
+              </Link>
+            </a>
+          </li>
+          {loginAlready && props.account.role === "admin" && (
+            <li className="nav-item">
+              <a className="nav-link" href="#">
+                <Link
+                  to="/adminator"
+                  style={{ textDecoration: "none" }}
+                  onClick={() => {
+                    if (user !== null) {
+                      props.handleIsUser();
+                    } else {
+                      navigate("/login");
+                    }
+                  }}
+                >
+                  Quản lý
+                </Link>
+              </a>
+            </li>
+          )}
+          {loginAlready && (
+            <li className="nav-item">
+              <a className="nav-link" href="#">
+                <Link to="/MyOrder" style={{ textDecoration: "none" }}>
+                  Đơn hàng
+                </Link>
+              </a>
+            </li>
+          )}
+          {loginAlready && (
+            <li className="nav-item">
+              <a className="nav-link" href="#">
+                <div className="cart bg-purple">
+                  <button
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#exampleModal"
+                    style={{
+                      borderStyle: "none",
+                      borderColor: "none",
+                      borderImage: "none",
+                      padding: "4px 6px",
+                      borderRadius: "6px",
+                      position: "relative",
+                      display: "inline",
+                      background: "none",
+                    }}
+                  >
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </a>
+            </li>
+          )}
+
+          <div className="topbar-divider d-none d-sm-block" />
+          <li className="nav-item dropdown no-arrow">
+            <a
+              className="nav-link dropdown-toggle"
+              href="#"
+              id="userDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <img
+                className="img-profile rounded-circle"
+                src="https://w7.pngwing.com/pngs/81/570/png-transparent-profile-logo-computer-icons-user-user-blue-heroes-logo-thumbnail.png"
+                alt=""
+                height={30}
+              />
+            </a>
+            <div
+              className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+              aria-labelledby="userDropdown"
+            >
+              {loginAlready && (
+                <a
+                  className="dropdown-item"
+                  href=""
+                  data-toggle="modal"
+                  data-target="#logoutModal"
+                >
+                  <Link
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                      marginLeft: " 27px",
+                    }}
+                    to="/profile"
+                  >
+                    <i
+                      class="fa fa-user fa-sm fa-fw mr-2 text-gray-400"
+                      aria-hidden="true"
+                      style={{ left: "14px" }}
+                    ></i>
+                    Cá nhân
+                  </Link>
+                </a>
+              )}
+              {isLogin ? (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                <a
+                  className="dropdown-item"
+                  href=""
+                  data-toggle="modal"
+                  data-target="#logoutModal"
+                  onClick={() => {
+                    handleLogout();
+                    navigate("/");
+                  }}
+                >
+                  <i className="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400" />
+                  Đăng xuất
+                </a>
+              ) : (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                <Link
+                  className="dropdown-item"
+                  to="/login"
+                  data-toggle="modal"
+                  data-target="#logoutModal"
+                >
+                  <i className="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400" />
+                  Đăng nhập
+                </Link>
+              )}
+            </div>
+          </li>
+        </ul>
+      </div>
     </nav>
   );
 }

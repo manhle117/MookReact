@@ -23,14 +23,19 @@ export default function Login(props) {
       .then((response) => {
         console.log(response.data);
         localStorage.setItem("userId", response.data);
+        Swal.fire({
+          title: "Đăng nhập thành công",
+          icon: "success",
+        });
         props.setIsLogin(true);
         props.getCarts();
         props.getUser();
+        props.getMyOrder();
         navigate("/");
       })
       .catch((error) => {
         Swal.fire({
-          title: "Đăng nhập thất bại",
+          title: "Sai tài khoản hoặc mật khẩu",
           icon: "error",
         });
         console.log(error);

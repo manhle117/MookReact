@@ -61,6 +61,7 @@ export default function Register() {
                     value={register.username}
                     onChange={handleChange}
                     placeholder="Username"
+                    required
                   />
                   <i className="fa fa-user" />
                 </div>
@@ -73,6 +74,7 @@ export default function Register() {
                     onChange={handleChange}
                     className="signup_pass"
                     placeholder="Password"
+                    required
                   />
                   <i className="fa fa-lock" />
                   <i
@@ -87,6 +89,7 @@ export default function Register() {
                     name="fullName"
                     value={register.fullName}
                     onChange={handleChange}
+                    required
                   />
                   <i class="fa fa-user" aria-hidden="true"></i>
                 </div>

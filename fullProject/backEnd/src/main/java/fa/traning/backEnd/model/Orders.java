@@ -15,17 +15,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table
+@Table()
 @Builder
 public class Orders {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int orderId;
 	@ManyToOne
-	private Users user;
+	private Users user;	
 	private Date orderDate;
 	private double totalAmount;
-	
+	@Column(columnDefinition = "int default 0")
+	private int status;
 	
 	
 	

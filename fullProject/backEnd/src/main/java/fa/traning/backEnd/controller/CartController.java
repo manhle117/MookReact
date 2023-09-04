@@ -72,6 +72,15 @@ public class CartController {
 		cartRepo.deleteByUserId(userId);
 		return ResponseEntity.ok("Delete All cart");
 	}
+	@GetMapping("/{id}/user")
+	public ResponseEntity<?> getUserFromCart (@PathVariable("id") int cartId){
+		Carts cart = cartRepo.findById(cartId).orElse(null);
+		if(cart == null) {
+			return ResponseEntity.notFound().build();
+		}
+		Users user = cart.getUser();
+		return ResponseEntity.ok(user);
+	}
 	
 	
 

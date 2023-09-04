@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import "./StyleProductDetail.css";
 export default function ProductDetail(props) {
   const [productDetail, setProductDetail] = useState({});
@@ -20,7 +21,7 @@ export default function ProductDetail(props) {
   return (
     <>
       <h2 className="d-flex justify-content-center text-bold">
-        Product Detail
+        Chi tiết giỏ hàng
       </h2>
       <div className="col-7 bg-warning mx-auto" style={{ borderRadius: "6px" }}>
         <div className="row">
@@ -41,7 +42,7 @@ export default function ProductDetail(props) {
               </div>
               <div className="price-area my-4">
                 <p className="new-price text-bold mb-1">
-                  {productDetail.price} đ
+                  {productDetail.price?.toLocaleString()} đ
                 </p>
               </div>
               <div className="buttons d-flex my-5">
@@ -49,10 +50,10 @@ export default function ProductDetail(props) {
                   <button
                     className="shadow btn custom-btn"
                     onClick={() => {
-                      props.getItemToCart(productDetail, quantity);
+                      props.getItemToCart(productDetail, quantity, true);
                     }}
                   >
-                    Add to cart
+                    Thêm vào giỏ
                   </button>
                 </div>
                 <div className="block quantity">
@@ -62,7 +63,11 @@ export default function ProductDetail(props) {
                     id="cart_quantity"
                     value={quantity}
                     onChange={(e) => {
-                      setQuantity(e.target.value);
+                      if (e.target.value > 0) {
+                        setQuantity(e.target.value);
+                      } else {
+                        setQuantity(1);
+                      }
                     }}
                     min={1}
                     placeholder="Enter email"

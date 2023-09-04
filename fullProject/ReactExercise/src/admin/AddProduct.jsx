@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 export default function AddProduct(props) {
@@ -21,9 +20,55 @@ export default function AddProduct(props) {
       props.setImagePreview(null);
     }
   }, [props.selectedProduct]);
+  const [errors, setErrors] = useState({
+    productName: "",
+    price: "",
+    ingredient: "",
+    decription: "",
+    file: null,
+  });
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!products.productName.trim()) {
+      newErrors.productName = "Product name is required.";
+      isValid = false;
+    }
+
+    if (!products.price) {
+      newErrors.price = "Price is required.";
+      isValid = false;
+    } else if (isNaN(products.price)) {
+      newErrors.price = "Price must be a valid number.";
+      isValid = false;
+    }
+    if (!products.ingredient) {
+      newErrors.ingredient = "ingredient  is required.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+  const handleSubmitWrapper = (event) => {
+    const isValid = validateForm();
+    if (isValid) {
+      setErrors({
+        productName: "",
+        price: "",
+        ingredient: "",
+        decription: "",
+        file: null,
+      });
+    }
+    props.handleSubmit(event, isValid);
+  };
+
   return (
     <div>
-      <form onSubmit={props.handleSubmit}>
+      <form onSubmit={handleSubmitWrapper}>
         <div
           className="modal fade"
           id="exampleModal"
@@ -56,8 +101,10 @@ export default function AddProduct(props) {
                     name="productName"
                     value={products.productName}
                     onChange={props.handleChange}
-                    required
                   />
+                  {errors.productName && (
+                    <p className="error">{errors.productName}</p>
+                  )}
                 </div>
                 <div className="form-group">
                   <label htmlFor="inputPrice">Price</label>
@@ -68,8 +115,8 @@ export default function AddProduct(props) {
                     name="price"
                     value={products.price}
                     onChange={props.handleChange}
-                    required
                   />
+                  {errors.price && <p className="error">{errors.price}</p>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="inputIngredient">Ingredient</label>
@@ -80,8 +127,10 @@ export default function AddProduct(props) {
                     name="ingredient"
                     value={products.ingredient}
                     onChange={props.handleChange}
-                    required
                   />
+                  {errors.ingredient && (
+                    <p className="error">{errors.ingredient}</p>
+                  )}
                 </div>
                 <div className="form-group">
                   <label htmlFor="inputDescription">Description</label>
@@ -102,7 +151,6 @@ export default function AddProduct(props) {
                     id="inputImage"
                     name="file"
                     onChange={props.handleFileChange}
-                    required
                   />
                 </div>
                 {props.imagePreview && (

@@ -16,7 +16,7 @@ export default function OrderDetail(props) {
         <tbody>
           {props.orderDetail.map((item) => {
             return (
-              <tr>
+              <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.product.productName}</td>
                 <td>
@@ -32,8 +32,8 @@ export default function OrderDetail(props) {
             );
           })}
           <th colSpan={4}>
-            Tổng tiền: 
-            {(props.orderDetail[0]?.order?.totalAmount).toLocaleString()}đ
+            Tổng tiền:
+            {props.orderDetail[0]?.order?.totalAmount}đ
           </th>
         </tbody>
       </table>

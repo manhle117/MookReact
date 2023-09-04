@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Swal from "sweetalert2";
 import AddProduct from "./AddProduct";
+import ListOrder from "./ListOrder";
 import ListProductAdmin from "./ListProductAdmin";
 import ListUserAdmin from "./ListUserAdmin";
+import ReportChart from "./ReportChart";
 import SideBar from "./SideBar";
 
 export default function HomeAdmin(props) {
@@ -12,7 +14,11 @@ export default function HomeAdmin(props) {
   const [isListProducts, setIsListProducts] = useState(true);
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [listNotConfirm, setListNotConFirm] = useState([]);
+  const [listCancel, setListCancel] = useState([]);
   const [listUsers, setListUsers] = useState([]);
+  const [listOrder, setListOrder] = useState([]);
+  const [valueSearch, setValueSearch] = useState("");
   const [products, setProducts] = useState({
     productName: "",
     price: "",
@@ -21,16 +27,21 @@ export default function HomeAdmin(props) {
     file: null,
   });
   useEffect(() => {
-    fetchListProduct();
     fetchListUser();
+    fetchListOrderConfirm();
+    getListOrderNotConfirm();
+    fetchListOrderCancel();
   }, []);
+  useEffect(() => {
+    fetchListProduct();
+  }, [valueSearch]);
   const handleSetContent = () => {
     setIsListProducts(!isListProducts);
   };
   const fetchListProduct = async () => {
     try {
       const response = await axios
-        .get("http://localhost:8080/api/products/")
+        .get(`http://localhost:8080/api/products/?search=${valueSearch}`)
         .then((response) => setListProducts(response.data));
     } catch (error) {
       console.log("Error getting products", error);
@@ -41,10 +52,39 @@ export default function HomeAdmin(props) {
       .get("http://localhost:8080/api/users")
       .then((response) => {
         setListUsers(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
+      });
+  };
+  const fetchListOrderConfirm = async () => {
+    await axios
+      .get("http://localhost:8080/api/orders/confirm")
+      .then((res) => {
+        setListOrder(res.data);
+      })
+      .catch((er) => {
+        console.log(er);
+      });
+  };
+  const fetchListOrderCancel = async () => {
+    await axios
+      .get("http://localhost:8080/api/orders/cancelList")
+      .then((res) => {
+        setListCancel(res.data);
+      })
+      .catch((er) => {
+        console.log(er);
+      });
+  };
+  const getListOrderNotConfirm = async () => {
+    await axios
+      .get("http://localhost:8080/api/orders/notConfirm")
+      .then((res) => {
+        setListNotConFirm(res.data);
+      })
+      .catch((er) => {
+        console.log(er);
       });
   };
   const handleSelectedProduct = (product) => {
@@ -58,7 +98,7 @@ export default function HomeAdmin(props) {
       [name]: value,
     }));
   };
-  const handleSubmit = (event) => {
+  const handleSubmit = (event, isValid) => {
     event.preventDefault();
     const formData = new FormData();
     formData.append("file", products.file);
@@ -66,56 +106,58 @@ export default function HomeAdmin(props) {
     formData.append("price", products.price);
     formData.append("ingredient", products.ingredient);
     formData.append("decription", products.decription);
-    if (selectedProduct) {
-      axios
-        .put(
-          `http://localhost:8080/api/products/update/${selectedProduct.productId}`,
-          formData,
-          {
+    if (isValid) {
+      if (selectedProduct) {
+        axios
+          .put(
+            `http://localhost:8080/api/products/update/${selectedProduct.productId}`,
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          )
+          .then((response) => {
+            console.log("update success", response.data);
+            Swal.fire({
+              title: "Update Success",
+              icon: "success",
+            });
+            setProducts({
+              productName: "",
+              price: "",
+              ingredient: "",
+              decription: "",
+              file: null,
+            });
+            setImagePreview(null);
+            closeModal();
+            fetchListProduct();
+          });
+      } else {
+        axios
+          .post("http://localhost:8080/api/products/add", formData, {
             headers: { "Content-Type": "multipart/form-data" },
-          }
-        )
-        .then((response) => {
-          console.log("update success", response.data);
-          Swal.fire({
-            title: "Update Success",
-            icon: "success",
+          })
+          .then((response) => {
+            console.log("add products successfully", response.data);
+            Swal.fire({
+              title: "Add Success",
+              icon: "success",
+            });
+            setProducts({
+              productName: "",
+              price: "",
+              ingredient: "",
+              decription: "",
+              file: null,
+            });
+            closeModal();
+            fetchListProduct();
+          })
+          .catch((error) => {
+            console.log("error: " + error);
           });
-          setProducts({
-            productName: "",
-            price: "",
-            ingredient: "",
-            decription: "",
-            file: null,
-          });
-          setImagePreview(null);
-          closeModal();
-          fetchListProduct();
-        });
-    } else {
-      axios
-        .post("http://localhost:8080/api/products/add", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then((response) => {
-          console.log("add products successfully", response.data);
-          Swal.fire({
-            title: "Add Success",
-            icon: "success",
-          });
-          setProducts({
-            productName: "",
-            price: "",
-            ingredient: "",
-            decription: "",
-            file: null,
-          });
-          closeModal();
-          fetchListProduct();
-        })
-        .catch((error) => {
-          console.log("error: " + error);
-        });
+      }
     }
   };
   const closeModal = () => {
@@ -189,18 +231,55 @@ export default function HomeAdmin(props) {
           handleIsUser={props.handleIsUser}
           handleSetContent={handleSetContent}
         />
-        {isListProducts && (
-          <ListProductAdmin
-            listProducts={listProducts}
-            deleteProduct={deleteProduct}
-            setSelectedProduct={setSelectedProduct}
-            handleSelectedProduct={handleSelectedProduct}
-          />
-        )}
 
-        {!isListProducts && (
-          <ListUserAdmin listUsers={listUsers} deleteUser={deleteUser} />
-        )}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ListProductAdmin
+                valueSearch={valueSearch}
+                setValueSearch={setValueSearch}
+                listProducts={listProducts}
+                deleteProduct={deleteProduct}
+                setSelectedProduct={setSelectedProduct}
+                handleSelectedProduct={handleSelectedProduct}
+              />
+            }
+          />
+          <Route
+            path="listProductAdmin"
+            element={
+              <ListProductAdmin
+                valueSearch={valueSearch}
+                setValueSearch={setValueSearch}
+                listProducts={listProducts}
+                deleteProduct={deleteProduct}
+                setSelectedProduct={setSelectedProduct}
+                handleSelectedProduct={handleSelectedProduct}
+              />
+            }
+          />
+          <Route
+            path="listUser"
+            element={
+              <ListUserAdmin listUsers={listUsers} deleteUser={deleteUser} />
+            }
+          />
+          <Route
+            path="listOrder"
+            element={
+              <ListOrder  
+              getMyOrder={props.getMyOrder}
+                listCancel={listCancel}
+                listOrder={listOrder}
+                listNotConfirm={listNotConfirm}
+                fetchListOrderConfirm={fetchListOrderConfirm}
+                getListOrderNotConfirm={getListOrderNotConfirm}
+              />
+            }
+          />
+          <Route path="reportChart" element={<ReportChart />} />
+        </Routes>
       </div>
       <AddProduct
         selectedProduct={selectedProduct}

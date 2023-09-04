@@ -21,9 +21,12 @@ public class Users {
 	private String password;
 	private String fullName;
 	@Column
+	private String address;
+	@Column
+	private String phoneNumber;
+	@Column String email;
+	@Column
 	private String Role;
-	
-	
 
 	
 	

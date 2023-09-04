@@ -1,41 +1,16 @@
 import axios from "axios";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 export default function Cart(props) {
   const cart = props.cart;
   const deleteItem = props.deleteItem;
   const handleQuantity = props.getItemToCart;
   const hasItem = cart.length > 0;
-
-  const totalPayment = cart.reduce((totalPayment, item) => {
-    return totalPayment + item.quantity * item.product.price;
+  const navigate = useNavigate();
+  const totalAmount = props.cart.reduce((total, item) => {
+    return total + item.product.price * item.quantity;
   }, 0);
-  const handleClearCart = async () => {
-    const userId = localStorage.getItem("userId");
-    await axios
-      .delete(`http://localhost:8080/api/carts/deleteAllCart/${userId}`)
-      .then((response) => {
-        props.getCarts();
-      });
-  };
-  const handlePayment = () => {
-    const user = localStorage.getItem("userId");
-    console.log(totalPayment);
-    axios
-      .post(`http://localhost:8080/api/orders/${user}/${totalPayment}`)
-      .then((response) => {
-        handleClearCart();
-        props.getMyOrder();
-        Swal.fire({
-          title: "Thanh toán thành công",
-          icon: "success",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   return (
     <div>
       <div
@@ -95,7 +70,29 @@ export default function Cart(props) {
                               <button
                                 className="btn btn-info"
                                 onClick={() => {
-                                  handleQuantity(item.product, -1);
+                                  if (item.quantity === 1) {
+                                    Swal.fire({
+                                      title:
+                                        "Bạn có muốn xóa sản phẩm này không?",
+                                      html: `<span style="color: red">${item.product.productName}</span>`,
+                                      icon: "warning",
+                                      showCancelButton: true,
+                                      confirmButtonColor: "#3085d6",
+                                      cancelButtonColor: "#d33",
+                                      confirmButtonText: "Yes, delete it!",
+                                    }).then((result) => {
+                                      if (result.isConfirmed) {
+                                        deleteItem(item.cartId);
+                                        Swal.fire(
+                                          "Đã xóa sản phẩm!",
+                                          "sản phẩm đã bị xóa",
+                                          "success"
+                                        );
+                                      }
+                                    });
+                                  } else {
+                                    handleQuantity(item.product, -1, false);
+                                  }
                                 }}
                               >
                                 -
@@ -111,7 +108,7 @@ export default function Cart(props) {
                               <button
                                 className="btn btn-info"
                                 onClick={() => {
-                                  handleQuantity(item.product, 1);
+                                  handleQuantity(item.product, 1, false);
                                 }}
                               >
                                 +
@@ -128,7 +125,25 @@ export default function Cart(props) {
                               <button
                                 className="btn btn-danger"
                                 onClick={() => {
-                                  deleteItem(item.cartId);
+                                  Swal.fire({
+                                    title:
+                                      "Bạn có muốn xóa sản phẩm này không?",
+                                    html: `<span style="color: red">${item.product.productName}</span>`,
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#3085d6",
+                                    cancelButtonColor: "#d33",
+                                    confirmButtonText: "Yes, delete it!",
+                                  }).then((result) => {
+                                    if (result.isConfirmed) {
+                                      deleteItem(item.cartId);
+                                      Swal.fire(
+                                        "Xóa thành công!",
+                                        "sản phẩm đã bị xóa",
+                                        "success"
+                                      );
+                                    }
+                                  });
                                 }}
                               >
                                 Delete
@@ -140,7 +155,9 @@ export default function Cart(props) {
                     </tbody>
                   </>
                 ) : (
-                  <h2 className="text-danger ">Has no Item in your cart</h2>
+                  <h2 className="text-danger ">
+                    Bánh ngon tuyệt, Cùng chọn và thưởng thức nào!!
+                  </h2>
                 )}
               </table>
             </div>
@@ -148,7 +165,7 @@ export default function Cart(props) {
             <div class="modal-footer">
               {hasItem && (
                 <h3 className="mr-auto text-danger">
-                  totalPayment: {totalPayment.toLocaleString()}đ
+                  Tổng tiền: {totalAmount.toLocaleString()}đ
                 </h3>
               )}
               <button
@@ -156,17 +173,18 @@ export default function Cart(props) {
                 class="btn btn-secondary"
                 data-dismiss="modal"
               >
-                Close
+                Đóng
               </button>
               {hasItem && (
                 <button
                   type="button"
                   class="btn btn-primary"
                   onClick={() => {
-                    handlePayment(cart);
+                    props.closeModal();
+                    navigate("/paymentDetail");
                   }}
                 >
-                  Purchase
+                  Mua hàng
                 </button>
               )}
             </div>

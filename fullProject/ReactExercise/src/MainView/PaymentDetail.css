@@ -1,0 +1,13 @@
+.breadcrumb-item {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 30px;
+    list-style: none;
+}
+
+.customDiv {
+    height: auto;
+    width: 75%;
+    border-radius: 8px;
+}
